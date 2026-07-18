@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BPCL Sambalpur Territory - Water Log Utility</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen">
+
+  <!-- Main Navigation Navbar Header -->
+  <header class="bg-blue-800 text-white shadow-md px-4 py-3 sticky top-0 z-50 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center font-bold text-blue-900 text-xs">BP</div>
+      <h1 class="font-bold tracking-wide text-sm md:text-lg">Sambalpur Territory Water Log</h1>
+    </div>
+    <button id="authTriggerBtn" onclick="toggleAuthModal(true)" class="bg-blue-700 hover:bg-blue-600 border border-blue-400/30 px-3 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition">Office Sign-In</button>
+    <button id="logoutBtn" onclick="handleLogout()" class="hidden bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition">Secure Sign-Out</button>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Public Submission Form Container Card -->
+    <section id="publicFormCard" class="bg-white rounded-xl shadow-xl border border-slate-200/60 overflow-hidden">
+      <div class="bg-linear-to-r from-blue-700 to-indigo-800 p-4 md:p-6 text-white">
+        <h2 class="text-xl font-bold">Daily Tank Water Logging Protocol</h2>
+        <p class="text-xs text-blue-100 mt-1 opacity-90">Dealers / Operators entry terminal window. Active from 06:00 hrs to 00:00 hrs.</p>
+      </div>
+
+      <form id="waterLogForm" onsubmit="submitFormEntry(event)" class="p-4 md:p-6 space-y-6">
+        <!-- Sales Area & Searchable RO Grid Dropdown Selector block -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Sales Area</label>
+            <select id="salesAreaSelect" onchange="filterRODropdown()" required class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition">
+              <option value="">-- Choose Sales Area --</option>
+              <option value="Sambalpur">Sambalpur</option>
+              <option value="Baripada">Baripada</option>
+              <option value="Rourkela">Rourkela</option>
+              <option value="Bhawanipatna">Bhawanipatna</option>
+            </select>
+          </div>
+
+          <div class="relative">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Retail Outlet / RO Code</label>
+            <input type="text" id="roSearchInput" placeholder="Type to search RO or Code..." onfocus="showRODropdown()" oninput="filterROSearch()" required class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition" />
+            <input type="hidden" id="selectedRODataCode" required />
+            <input type="hidden" id="selectedRODataName" required />
+            
+            <!-- Custom Searchable Dropdown List Engine -->
+            <div id="roDropdownOptionsContainer" class="hidden absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-2xl z-40 divide-y divide-slate-100"></div>
+          </div>
+        </div>
+
+        <hr class="border-slate-200/80" />
+
+        <!-- Double Binary Check Logic Fields Grid Component -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60">
+            <span class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Water Present - Physical Check</span>
+            <div class="flex gap-4">
+              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-300 rounded-lg cursor-pointer hover:bg-red-50 transition font-medium text-sm text-slate-700 has-[:checked]:border-red-600 has-[:checked]:bg-red-50 has-[:checked]:text-red-700">
+                <input type="radio" name="physicalCheck" value="YES" required class="accent-red-600 scale-110"> YES
+              </label>
+              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-300 rounded-lg cursor-pointer hover:bg-green-50 transition font-medium text-sm text-slate-700 has-[:checked]:border-green-600 has-[:checked]:bg-green-50 has-[:checked]:text-green-700">
+                <input type="radio" name="physicalCheck" value="NO" class="accent-green-600 scale-110"> NO
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60">
+            <span class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Water Present - Automation / ATG Check</span>
+            <div class="flex gap-4">
+              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-300 rounded-lg cursor-pointer hover:bg-red-50 transition font-medium text-sm text-slate-700 has-[:checked]:border-red-600 has-[:checked]:bg-red-50 has-[:checked]:text-red-700">
+                <input type="radio" name="atgCheck" value="YES" required class="accent-red-600 scale-110"> YES
+              </label>
+              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-300 rounded-lg cursor-pointer hover:bg-green-50 transition font-medium text-sm text-slate-700 has-[:checked]:border-green-600 has-[:checked]:bg-green-50 has-[:checked]:text-green-700">
+                <input type="radio" name="atgCheck" value="NO" class="accent-green-600 scale-110"> NO
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quantitative Metric Inputs Field Block -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">MS Water Dip Reading (mm)</label>
+            <input type="number" id="msDipInput" step="1" min="0" required placeholder="Enter dip value in mm" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Density Reading (Kg/m³)</label>
+            <input type="number" id="densityInput" step="0.1" min="0" required placeholder="e.g. 745.5" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Remarks <span class="text-slate-400 font-normal">(Optional)</span></label>
+          <textarea id="remarksInput" rows="2" placeholder="Provide details regarding variance or resolution steps if any..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-linear-to-r from-blue-700 to-indigo-700 hover:from-blue-800 hover:to-indigo-800 text-white font-bold py-3 px-4 rounded-xl transition shadow-md hover:shadow-lg text-sm uppercase tracking-wider cursor-pointer">Transmit Daily Entry</button>
+      </form>
+    </section>
+
+    <!-- Secure Office Dashboard View Container -->
+    <section id="officeDashboardCard" class="hidden bg-white rounded-xl shadow-xl border border-slate-200/60 p-4 md:p-6 space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-slate-100 pb-4 gap-2">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Territory Operational Dashboard</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Authorized Scope: <span id="scopeBadgeDisplay" class="font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded"></span></p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="triggerDataExport('matrix')" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition uppercase tracking-wider shadow-xs cursor-pointer">Download Matrix Sheet</button>
+          <button onclick="triggerDataExport('raw')" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition uppercase tracking-wider shadow-xs cursor-pointer">Download Raw Logs</button>
+        </div>
+      </div>
+
+      <!-- Realtime Matrix Tracking Grid Display UI element -->
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Live Territory Monitoring View (Current Query Window)</h3>
+        <div class="overflow-x-auto border border-slate-200 rounded-lg max-h-96">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-slate-100 text-slate-700 uppercase font-semibold tracking-wider sticky top-0 border-b border-slate-200">
+              <tr>
+                <th class="p-3 whitespace-nowrap bg-slate-100">Date</th>
+                <th class="p-3 whitespace-nowrap bg-slate-100 min-w-[200px]">Retail Outlet (Code)</th>
+                <th class="p-3 text-center">6am</th>
+                <th class="p-3 text-center">8am</th>
+                <th class="p-3 text-center">10am</th>
+                <th class="p-3 text-center">12pm</th>
+                <th class="p-3 text-center">2pm</th>
+                <th class="p-3 text-center">4pm</th>
+                <th class="p-3 text-center">6pm</th>
+                <th class="p-3 text-center">8pm</th>
+                <th class="p-3 text-center">10pm</th>
+                <th class="p-3 text-center">12am</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardLiveTableBody" class="divide-y divide-slate-200 font-medium text-slate-600">
+              <tr>
+                <td colspan="12" class="p-8 text-center text-slate-400 italic">No entries aggregated for display yet. Use export tools to compile full records.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Login Modal Dialog Component Overlay -->
+  <dialog id="authModal" class="rounded-xl border border-slate-200 p-0 shadow-2xl backdrop:bg-slate-900/40 w-full max-w-md overflow-hidden">
+    <div class="bg-slate-900 p-4 text-white flex justify-between items-center">
+      <h3 class="font-bold text-sm tracking-wide uppercase">Territory Office Sign-In</h3>
+      <button onclick="toggleAuthModal(false)" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
+    </div>
+    <form onsubmit="executeAuthLogin(event)" class="p-6 space-y-4">
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Officer Login ID</label>
+        <input type="text" id="authUsername" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition" />
+      </div>
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Security Password</label>
+        <input type="password" id="authPassword" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition" />
+      </div>
+      <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-lg transition text-xs uppercase tracking-wider">Authenticate Identity</button>
+    </form>
+  </dialog>
+
+  <!-- Global Application Logic Script Component -->
+  <script>
+    // Your verified Apps Script API link bound directly here
+    const BACKEND_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbzZsbBpSzM6qZB-ctf9NN0X8d0viwnx6dHBKhLTtqJdh1aleVHcMVXh4j6UeR_dptGR/exec"; 
+    
+    let localROCache = [];
+    let stateActiveUserToken = localStorage.getItem("bpcl_token") || null;
+    let stateActiveUserArea = localStorage.getItem("bpcl_area") || null;
+
+    window.addEventListener("DOMContentLoaded", () => {
+      fetchRODatabase();
+      evaluateAuthUIState();
+      
+      // Dismiss active custom dropdown menu on outer viewport click
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest("#roSearchInput") && !e.target.closest("#roDropdownOptionsContainer")) {
+          document.getElementById("roDropdownOptionsContainer").classList.add("hidden");
+        }
+      });
+    });
+
+    async function fetchRODatabase() {
+      try {
+        const r = await fetch(`${BACKEND_API_ENDPOINT}?action=getROs`);
+        const res = await r.json();
+        if (res.success) {
+          localROCache = res.data;
+        }
+      } catch(e) { console.error("Database connection fault:", e); }
+    }
+
+    function toggleAuthModal(show) {
+      const modal = document.getElementById("authModal");
+      show ? modal.showModal() : modal.close();
+    }
+
+    async function executeAuthLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById("authUsername").value;
+      const p = document.getElementById("authPassword").value;
+      
+      try {
+        const r = await fetch(BACKEND_API_ENDPOINT, {
+          method: "POST",
+          body: JSON.stringify({ action: "login", username: u, password: p })
+        });
+        const res = await r.json();
+        if (res.success) {
+          stateActiveUserToken = res.token;
+          stateActiveUserArea = res.salesArea;
+          localStorage.setItem("bpcl_token", res.token);
+          localStorage.setItem("bpcl_area", res.salesArea);
+          toggleAuthModal(false);
+          evaluateAuthUIState();
+        } else {
+          alert("Authentication Rejected: " + res.error);
+        }
+      } catch(err) { alert("Network communication error."); }
+    }
+
+    function handleLogout() {
+      localStorage.clear();
+      stateActiveUserToken = null;
+      stateActiveUserArea = null;
+      evaluateAuthUIState();
+    }
+
+    function evaluateAuthUIState() {
+      const authBtn = document.getElementById("authTriggerBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const formCard = document.getElementById("publicFormCard");
+      const dashboardCard = document.getElementById("officeDashboardCard");
+      
+      if (stateActiveUserToken) {
+        authBtn.classList.add("hidden");
+        logoutBtn.classList.remove("hidden");
+        formCard.classList.add("hidden");
+        dashboardCard.classList.remove("hidden");
+        document.getElementById("scopeBadgeDisplay").innerText = stateActiveUserArea;
+        syncDashboardMatrixData();
+      } else {
+        authBtn.classList.remove("hidden");
+        logoutBtn.classList.add("hidden");
+        formCard.classList.remove("hidden");
+        dashboardCard.classList.add("hidden");
+      }
+    }
+
+    function showRODropdown() {
+      const sa = document.getElementById("salesAreaSelect").value;
+      if (!sa) {
+        alert("Please specify target Sales Area context first.");
+        document.getElementById("roSearchInput").blur();
+        return;
+      }
+      filterROSearch();
+    }
+
+    // Dynamic clean helper to guarantee the Dropdown works accurately on option resets
+    function filterRODropdown() {
+      document.getElementById("roSearchInput").value = "";
+      document.getElementById("selectedRODataCode").value = "";
+      document.getElementById("selectedRODataName").value = "";
+    }
+
+    function filterROSearch() {
+      const sa = document.getElementById("salesAreaSelect").value;
+      const query = document.getElementById("roSearchInput").value.toLowerCase();
+      const container = document.getElementById("roDropdownOptionsContainer");
+      
+      const filtered = localROCache.filter(item => 
+        item.salesArea === sa && 
+        (item.roName.toLowerCase().includes(query) || String(item.roCode).toLowerCase().includes(query))
+      );
+      
+      if(filtered.length === 0) {
+        container.innerHTML = `<div class="p-3 text-xs text-slate-400 italic">No matches mapped for Area: ${sa}</div>`;
+      } else {
+        container.innerHTML = filtered.map(item => `
+          <div onclick="selectRO('${item.roCode}', '${item.roName.replace(/'/g, "\\'")}')" class="p-3 text-xs hover:bg-blue-50 cursor-pointer transition flex justify-between items-center text-slate-700">
+            <span class="font-semibold">${item.roName}</span>
+            <span class="bg-slate-100 font-mono text-slate-500 px-1.5 py-0.5 rounded text-[10px]">${item.roCode}</span>
+          </div>
+        `).join('');
+      }
+      container.classList.remove("hidden");
+    }
+
+    function selectRO(code, name) {
+      document.getElementById("roSearchInput").value = `${name} (${code})`;
+      document.getElementById("selectedRODataCode").value = code;
+      document.getElementById("selectedRODataName").value = name;
+      document.getElementById("roDropdownOptionsContainer").classList.add("hidden");
+    }
+
+    async function submitFormEntry(e) {
+      e.preventDefault();
+      const payload = {
+        salesArea: document.getElementById("salesAreaSelect").value,
+        roName: document.getElementById("selectedRODataName").value,
+        roCode: document.getElementById("selectedRODataCode").value,
+        physicalCheck: document.querySelector('input[name="physicalCheck"]:checked').value,
+        atgCheck: document.querySelector('input[name="atgCheck"]:checked').value,
+        msDip: document.getElementById("msDipInput").value,
+        density: document.getElementById("densityInput").value,
+        remarks: document.getElementById("remarksInput").value
+      };
+
+      try {
+        const r = await fetch(BACKEND_API_ENDPOINT, {
+          method: "POST",
+          body: JSON.stringify({ action: "submitEntry", payload: payload })
+        });
+        const res = await r.json();
+        if (res.success) {
+          alert("Log Transmission Successfully Verified.");
+          document.getElementById("waterLogForm").reset();
+          filterRODropdown();
+        } else {
+          alert("Submission Fault: " + res.error);
+        }
+      } catch(err) { alert("Critical telemetry interface transmission error."); }
+    }
+
+    async function syncDashboardMatrixData() {
+      try {
+        const r = await fetch(`${BACKEND_API_ENDPOINT}?action=exportData&token=${stateActiveUserToken}`);
+        const res = await r.json();
+        if (!res.success) return;
+        
+        window.latestExportBlob = res; 
+        const body = document.getElementById("dashboardLiveTableBody");
+        
+        if(res.matrix.length <= 1) {
+          body.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-slate-400 italic">No historical timeline entries compiled for this visibility scope.</td></tr>`;
+          return;
+        }
+        
+        let html = "";
+        for (let i = 1; i < res.matrix.length; i++) {
+          const row = res.matrix[i];
+          html += `<tr>`;
+          html += `<td class="p-3 font-mono text-slate-500">${row[0]}</td>`;
+          html += `<td class="p-3 text-slate-900 font-semibold">${row[1]}</td>`;
+          
+          for (let c = 2; c < row.length; c++) {
+            let cellVal = row[c];
+            let classString = "p-3 text-center ";
+            if (cellVal === "DEVIATION") {
+              classString += "bg-red-50 text-red-600 font-bold border border-red-200/60";
+              cellVal = "WATER";
+            } else if (cellVal === "OK") {
+              classString += "text-green-600 font-semibold";
+            } else {
+              classString += "text-slate-300 font-light";
+            }
+            html += `<td class="${classString}">${cellVal}</td>`;
+          }
+          html += `</tr>`;
+        }
+        body.innerHTML = html;
+      } catch(e) { console.error("Dashboard compilation error:", e); }
+    }
+
+    function triggerDataExport(type) {
+      if (!window.latestExportBlob) return alert("Compiling dataset arrays, please retry shortly...");
+      
+      const arrData = type === 'matrix' ? window.latestExportBlob.matrix : window.latestExportBlob.raw;
+      let csvContent = "data:text/csv;charset=utf-8,";
+      
+      arrData.forEach(row => {
+        const cleanRow = row.map(val => {
+          let str = String(val).replace(/"/g, '""');
+          return str.includes(',') ? `"${str}"` : str;
+        });
+        csvContent += cleanRow.join(",") + "\r\n";
+      });
+      
+      const encodedUri = encodeURI(csvContent);
+      const targetLink = document.createElement("a");
+      targetLink.setAttribute("href", encodedUri);
+      targetLink.setAttribute("download", `BPCL_SBP_${type}_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(targetLink);
+      targetLink.click();
+      document.body.removeChild(targetLink);
+    }
+  </script>
+</body>
+</html>
