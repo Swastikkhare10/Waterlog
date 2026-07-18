@@ -144,7 +144,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div id="msDipWrapper" class="hidden">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">MS Water Dip Reading (mm)</label>
-            <input type="number" id="msDipInput" step="1" min="1" placeholder="Enter water dip in mm" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg p-2.5 text-sm outline-none transition text-slate-800" />
+            <input type="number" id="msDipInput" step="1" disabled placeholder="Enter water dip in mm" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg p-2.5 text-sm outline-none transition text-slate-800" />
           </div>
           <div id="densityWrapper" class="md:col-span-2">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Density Reading (Kg/m³) at 15°C</label>
@@ -435,11 +435,15 @@
       if (show) {
         wrapper.classList.remove("hidden");
         input.setAttribute("required", "required");
+        input.removeAttribute("disabled");
+        input.setAttribute("min", "1");
         input.value = "";
         densityWrapper.classList.remove("md:col-span-2");
       } else {
         wrapper.classList.add("hidden");
         input.removeAttribute("required");
+        input.setAttribute("disabled", "disabled");
+        input.removeAttribute("min");
         input.value = "0"; 
         densityWrapper.classList.add("md:col-span-2");
       }
