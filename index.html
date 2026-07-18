@@ -63,6 +63,11 @@
 
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
     
+    <div id="toastNotification" class="fixed top-20 right-4 z-50 transform translate-x-full transition-transform duration-300 bg-emerald-600 text-white font-bold text-xs uppercase px-4 py-3 rounded-xl shadow-lg flex items-center gap-2">
+      <span id="toastIcon">✓</span>
+      <span id="toastMessage">Success</span>
+    </div>
+
     <section id="publicFormCard" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden max-w-3xl mx-auto">
       
       <!-- Premium Segment Header -->
@@ -111,7 +116,6 @@
           </div>
         </div>
 
-        <!-- Dynamic Tank Selector Grid -->
         <div id="tankSelectorWrapper" class="bg-blue-50/40 p-4 rounded-xl border border-blue-100/80">
           <label class="block text-xs font-bold uppercase tracking-wider text-blue-800 mb-2">Select Monitored Tank</label>
           <div id="noTanksMessage" class="text-xs text-slate-500 italic py-2">
@@ -124,41 +128,26 @@
 
         <hr class="border-slate-200/80" />
 
-        <!-- Verification Metrics Dual Check -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60">
-            <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Water Present - Physical Check</span>
-            <div class="flex gap-3">
-              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition font-bold text-xs text-slate-700 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-600">
-                <input type="radio" name="physicalCheck" value="YES" required class="accent-rose-500 scale-105"> YES (Water Present)
-              </label>
-              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition font-bold text-xs text-slate-700 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-600">
-                <input type="radio" name="physicalCheck" value="NO" class="accent-emerald-500 scale-105"> NO (NIL Water)
-              </label>
-            </div>
-          </div>
-
-          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60">
-            <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Water Present - Automation/ATG Check</span>
-            <div class="flex gap-3">
-              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition font-bold text-xs text-slate-700 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-600">
-                <input type="radio" name="atgCheck" value="YES" required class="accent-rose-500 scale-105"> YES (Water Present)
-              </label>
-              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition font-bold text-xs text-slate-700 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-600">
-                <input type="radio" name="atgCheck" value="NO" class="accent-emerald-500 scale-105"> NO (NIL Water)
-              </label>
-            </div>
+        <!-- Verification Metrics Dual Check (ATG Removed) -->
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60">
+          <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Water Present - Physical Check</span>
+          <div class="flex gap-3">
+            <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition font-bold text-xs text-slate-700 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-600">
+              <input type="radio" name="physicalCheck" value="YES" required onchange="toggleWaterDipVisibility(true)" class="accent-rose-500 scale-105"> YES (Water Present)
+            </label>
+            <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition font-bold text-xs text-slate-700 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-600">
+              <input type="radio" name="physicalCheck" value="NO" onchange="toggleWaterDipVisibility(false)" class="accent-emerald-500 scale-105"> NO (NIL Water)
+            </label>
           </div>
         </div>
 
-        <!-- Quantitative Readings Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+          <div id="msDipWrapper" class="hidden">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">MS Water Dip Reading (mm)</label>
-            <input type="number" id="msDipInput" step="1" min="0" required placeholder="Enter water dip in mm" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg p-2.5 text-sm outline-none transition text-slate-800" />
+            <input type="number" id="msDipInput" step="1" min="1" placeholder="Enter water dip in mm" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg p-2.5 text-sm outline-none transition text-slate-800" />
           </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Density Reading (Kg/m³)</label>
+          <div id="densityWrapper" class="md:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Density Reading (Kg/m³) at 15°C</label>
             <input type="number" id="densityInput" step="0.1" min="0" required placeholder="e.g. 745.5" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg p-2.5 text-sm outline-none transition text-slate-800" />
           </div>
         </div>
@@ -173,7 +162,7 @@
         </button>
       </form>
 
-      <!-- TAB 2: REGISTER TANK FORM (XP95 REMOVED) -->
+      <!-- TAB 2: REGISTER TANK FORM -->
       <form id="tankRegisterForm" onsubmit="submitNewTank(event)" class="p-6 space-y-6 hidden">
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3 text-amber-900">
           <div class="text-lg">💡</div>
@@ -228,7 +217,6 @@
 
     <section id="officeDashboardCard" class="hidden space-y-6">
       
-      <!-- Top Overview Dashboard Stats Cards Row -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <!-- Total Logging Reports -->
@@ -278,29 +266,20 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Hourly activity graph card -->
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs lg:col-span-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
             Hourly Entry & Water Detection Distribution
           </h3>
-          
-          <div class="space-y-3.5 pt-2">
-            <div id="hourlyVisualBars" class="space-y-3">
-              <!-- Visual bar charts rendered dynamically -->
-            </div>
-          </div>
+          <div id="hourlyVisualBars" class="space-y-3 pt-2"></div>
         </div>
 
-        <!-- Compliance and Alert quick overview list -->
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
             Critical Alerts (Water Detected)
           </h3>
-          <div id="criticalWaterAlertsBox" class="space-y-3 max-h-[260px] overflow-y-auto custom-scrollbar">
-            <!-- Warning alerts dynamically loaded -->
-          </div>
+          <div id="criticalWaterAlertsBox" class="space-y-3 max-h-[260px] overflow-y-auto custom-scrollbar"></div>
         </div>
       </div>
 
@@ -349,6 +328,7 @@
     </section>
   </main>
 
+  <!-- Login Modal Dialog Component Overlay -->
   <dialog id="authModal" class="rounded-2xl border border-slate-200 p-0 shadow-2xl backdrop:bg-slate-900/40 w-full max-w-sm overflow-hidden bg-white text-slate-800">
     <div class="bg-slate-900 p-5 text-white flex justify-between items-center">
       <h3 class="font-extrabold text-xs tracking-widest uppercase text-slate-200">Officer Terminal Login</h3>
@@ -372,7 +352,6 @@
   <script>
     const BACKEND_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbzZsbBpSzM6qZB-ctf9NN0X8d0viwnx6dHBKhLTtqJdh1aleVHcMVXh4j6UeR_dptGR/exec";
 
-    // Standard static retail outlets database matching BPCL territories
     const MASTER_RO_DATA = [
       { salesArea: "Sambalpur", roName: "Sambalpur Fuel Care", roCode: "112340" },
       { salesArea: "Sambalpur", roName: "TATA NAGAR SPEEDWAY", roCode: "117290" },
@@ -398,7 +377,6 @@
       fetchTanksDatabase();
       evaluateAuthUIState();
       
-      // Global click listener to close custom search suggestions
       document.addEventListener("click", (e) => {
         if (!e.target.closest("#roSearchInput") && !e.target.closest("#roDropdownOptionsContainer")) {
           document.getElementById("roDropdownOptionsContainer").classList.add("hidden");
@@ -409,6 +387,20 @@
       });
     });
 
+    function showToast(message, isSuccess = true) {
+      const toast = document.getElementById("toastNotification");
+      const icon = document.getElementById("toastIcon");
+      const msg = document.getElementById("toastMessage");
+      
+      msg.innerText = message;
+      icon.innerText = isSuccess ? "✓" : "⚠️";
+      toast.className = `fixed top-20 right-4 z-50 transform transition-transform duration-300 ${isSuccess ? 'bg-emerald-600' : 'bg-rose-600'} text-white font-bold text-xs uppercase px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 translate-x-0`;
+      
+      setTimeout(() => {
+        toast.classList.add("translate-x-full");
+      }, 4000);
+    }
+
     async function fetchRODatabase() {
       try {
         const r = await fetch(`${BACKEND_API_ENDPOINT}?action=getROs`);
@@ -417,7 +409,7 @@
           localROCache = res.data;
         }
       } catch(e) {
-        console.warn("Using offline fallback RO Database.");
+        console.warn("Fallback database selected.");
       }
     }
 
@@ -428,11 +420,28 @@
         if (res.success && res.data) {
           localTanksList = res.data;
           localStorage.setItem("local_tanks_db", JSON.stringify(localTanksList));
-          // Refresh the selector list immediately in case an RO is currently selected
           renderROSelectorTanks();
         }
       } catch(e) {
-        console.warn("Using stored tank database cache.");
+        console.warn("Using offline fallback tanks cache.");
+      }
+    }
+
+    function toggleWaterDipVisibility(show) {
+      const wrapper = document.getElementById("msDipWrapper");
+      const densityWrapper = document.getElementById("densityWrapper");
+      const input = document.getElementById("msDipInput");
+      
+      if (show) {
+        wrapper.classList.remove("hidden");
+        input.setAttribute("required", "required");
+        input.value = "";
+        densityWrapper.classList.remove("md:col-span-2");
+      } else {
+        wrapper.classList.add("hidden");
+        input.removeAttribute("required");
+        input.value = "0"; 
+        densityWrapper.classList.add("md:col-span-2");
       }
     }
 
@@ -478,11 +487,11 @@
           localStorage.setItem("bpcl_area", res.salesArea);
           toggleAuthModal(false);
           evaluateAuthUIState();
+          showToast("Office Sign-In Approved.");
         } else {
-          alert("Authentication Rejected: " + res.error);
+          showToast("Access Rejected: " + res.error, false);
         }
       } catch(err) {
-        // Mock fallback check for seamless previews
         const staticUsers = {
           "Alfred": { pw: "Alfred@188", sa: "Sambalpur" },
           "Niladri": { pw: "Niladri@939", sa: "Baripada" },
@@ -498,8 +507,9 @@
           localStorage.setItem("bpcl_area", uProfile.sa);
           toggleAuthModal(false);
           evaluateAuthUIState();
+          showToast("Locally Authenticated successfully.");
         } else {
-          alert("Authentication Failed. Verify login ID and passkey details.");
+          showToast("Verify login credentials and retry.", false);
         }
       }
     }
@@ -510,6 +520,7 @@
       stateActiveUserToken = null;
       stateActiveUserArea = null;
       evaluateAuthUIState();
+      showToast("Signed Out Securely.");
     }
 
     function evaluateAuthUIState() {
@@ -532,11 +543,10 @@
       }
     }
 
-    // SEARCH DROPDOWN FOR SUBMISSION TAB
     function showRODropdown() {
       const sa = document.getElementById("salesAreaSelect").value;
       if (!sa) {
-        alert("Select Sales Area context first.");
+        showToast("Please select Sales Area first.", false);
         document.getElementById("roSearchInput").blur();
         return;
       }
@@ -581,7 +591,6 @@
       renderROSelectorTanks();
     }
 
-    // Dynamic fuel tank choices compiler
     function renderROSelectorTanks() {
       const code = document.getElementById("selectedRODataCode").value;
       const containerGrid = document.getElementById("tanksRadioGrid");
@@ -594,7 +603,6 @@
         return;
       }
 
-      // Convert both to strings to avoid type comparison mismatches (Number vs String)
       const activeTanks = localTanksList.filter(t => String(t.roCode).trim() === String(code).trim());
       
       if (activeTanks.length === 0) {
@@ -626,11 +634,10 @@
       `).join('');
     }
 
-    // SEARCH DROPDOWN FOR TANK CREATION TAB
     function showTankRODropdown() {
       const sa = document.getElementById("tankSalesAreaSelect").value;
       if (!sa) {
-        alert("Select Sales Area context first.");
+        showToast("Select Sales Area context first.", false);
         document.getElementById("tankROSearchInput").blur();
         return;
       }
@@ -673,7 +680,6 @@
       document.getElementById("tankRODropdownOptionsContainer").classList.add("hidden");
     }
 
-    // TANK REGISTRATION FORM DISPATCH
     async function submitNewTank(e) {
       e.preventDefault();
       
@@ -692,16 +698,15 @@
         });
         const res = await r.json();
         if (res.success) {
-          alert("Storage Tank Created Successfully.");
+          showToast("Fuel Tank Configuration Registered.");
           document.getElementById("tankRegisterForm").reset();
           filterTankRODropdown();
           await fetchTanksDatabase();
           switchFormTab('entry');
         } else {
-          alert("Unable to register: " + res.error);
+          showToast("Unable to register: " + res.error, false);
         }
       } catch(err) {
-        // Fallback for sandboxed testing / raw state
         localTanksList.push({
           salesArea: payload.salesArea,
           roCode: payload.roCode,
@@ -709,25 +714,24 @@
           product: payload.product
         });
         localStorage.setItem("local_tanks_db", JSON.stringify(localTanksList));
-        alert("Tank Configured locally. To deploy it live, ensure your Apps Script is updated and newly deployed!");
+        showToast("Tank registered successfully locally.", true);
         document.getElementById("tankRegisterForm").reset();
         filterTankRODropdown();
         switchFormTab('entry');
       }
     }
 
-    // MAIN SUBMISSION DISPATCH
     async function submitFormEntry(e) {
       e.preventDefault();
       
       const activeTankRadio = document.querySelector('input[name="tankSelectRadio"]:checked');
       if (!activeTankRadio) {
-        alert("Please register and select a storage tank before transmitting daily entries.");
+        showToast("Please register and select a storage tank first.", false);
         return;
       }
 
       const roCode = document.getElementById("selectedRODataCode").value;
-      const matchingTankObj = localTanksList.find(t => t.roCode === roCode && t.tankName === activeTankRadio.value);
+      const matchingTankObj = localTanksList.find(t => String(t.roCode).trim() === String(roCode).trim() && t.tankName === activeTankRadio.value);
 
       const payload = {
         salesArea: document.getElementById("salesAreaSelect").value,
@@ -736,8 +740,7 @@
         tankName: activeTankRadio.value,
         product: matchingTankObj ? matchingTankObj.product : "MS",
         physicalCheck: document.querySelector('input[name="physicalCheck"]:checked').value,
-        atgCheck: document.querySelector('input[name="atgCheck"]:checked').value,
-        msDip: document.getElementById("msDipInput").value,
+        msDip: document.getElementById("msDipInput").value || "0",
         density: document.getElementById("densityInput").value,
         remarks: document.getElementById("remarksInput").value
       };
@@ -749,14 +752,14 @@
         });
         const res = await r.json();
         if (res.success) {
-          alert("Telemetry Data Successfully Transmitted.");
+          showToast("Quality Entry Transmitted Successfully.");
           document.getElementById("waterLogForm").reset();
+          toggleWaterDipVisibility(false);
           filterRODropdown();
         } else {
-          alert("Submission Rejected: " + res.error);
+          showToast("Submission Rejected: " + res.error, false);
         }
       } catch(err) {
-        // Fallback simulated local sandbox logging database
         const mockLogs = JSON.parse(localStorage.getItem("local_logs_db")) || [];
         const simulatedIST = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
         
@@ -783,7 +786,6 @@
           payload.tankName,
           payload.product,
           payload.physicalCheck,
-          payload.atgCheck,
           payload.msDip,
           payload.density,
           payload.remarks
@@ -792,13 +794,13 @@
         mockLogs.push(simulatedRow);
         localStorage.setItem("local_logs_db", JSON.stringify(mockLogs));
         
-        alert("Entry logged successfully in local simulation layer!");
+        showToast("Entry recorded in offline preview emulator.", true);
         document.getElementById("waterLogForm").reset();
+        toggleWaterDipVisibility(false);
         filterRODropdown();
       }
     }
 
-    // MATRIX RENDERING & SUMMARY GENERATION ENGINE
     async function syncDashboardMatrixData() {
       let rawRows = [];
       let matrix = [];
@@ -811,7 +813,6 @@
           matrix = res.matrix;
         }
       } catch(e) {
-        // Build simulated mock matrix data for quick previews
         const mockLogs = JSON.parse(localStorage.getItem("local_logs_db")) || [
           [
             "2026-07-18T07:22:15.000Z",
@@ -823,14 +824,13 @@
             "Tank MS 1",
             "MS",
             "YES",
-            "YES",
             "14",
             "750",
             "Heavy rain observed"
           ]
         ];
 
-        const headers = ["Timestamp", "Date", "Time Window", "Sales Area", "RO Name", "RO Code", "Tank Name", "Product", "Physical Check", "ATG Check", "MS Water Dip (mm)", "Density (Kg/m3)", "Remarks"];
+        const headers = ["Timestamp", "Date", "Time Window", "Sales Area", "RO Name", "RO Code", "Tank Name", "Product", "Physical Check", "MS Water Dip (mm)", "Density (Kg/m3) at 15C", "Remarks"];
         const filtered = [headers];
         const matrixData = {};
 
@@ -845,7 +845,7 @@
           const roKey = `${row[4]} (${row[5]})`;
           const timeCol = row[2].trim().toLowerCase();
           
-          const hasWater = (row[8] === "YES" || row[9] === "YES");
+          const hasWater = (row[8] === "YES" || row[8] === "Yes");
 
           if (!matrixData[dateKey]) matrixData[dateKey] = {};
           if (!matrixData[dateKey][roKey]) {
@@ -881,7 +881,6 @@
       renderInteractiveDashboard(rawRows, matrix);
     }
 
-    // SUMMARY/DASHBOARD VISUAL GENERATOR
     function renderInteractiveDashboard(rawRows, matrix) {
       const body = document.getElementById("dashboardLiveTableBody");
       
@@ -899,14 +898,13 @@
       for (let i = 1; i < rawRows.length; i++) {
         const row = rawRows[i];
         const isPhysicalYes = row[8] === "YES" || row[8] === "Yes";
-        const isAtgYes = row[9] === "YES" || row[9] === "Yes";
         const timeBlock = row[2] ? row[2].trim().toLowerCase() : "";
 
         if (hourlyDistribution[timeBlock] !== undefined) {
           hourlyDistribution[timeBlock]++;
         }
 
-        if (isPhysicalYes || isAtgYes) {
+        if (isPhysicalYes) {
           waterOccurrences++;
           if (hourlyWater[timeBlock] !== undefined) {
             hourlyWater[timeBlock]++;
@@ -915,7 +913,7 @@
             date: row[1],
             roName: row[4],
             tank: row[6] || "Main Tank",
-            method: isPhysicalYes && isAtgYes ? "Physical & ATG" : (isPhysicalYes ? "Physical Check" : "ATG Verification")
+            method: "Physical Check"
           });
         }
       }
@@ -931,7 +929,6 @@
       document.getElementById("statCompliance").innerText = `${compliancePercent}%`;
       document.getElementById("statTotalTanks").innerText = localTanksList.filter(t => stateActiveUserArea === "TM" || t.salesArea === stateActiveUserArea).length;
 
-      // Render Distribution Bars
       const hourlyVisualBox = document.getElementById("hourlyVisualBars");
       const maxEntriesInBlock = Math.max(...Object.values(hourlyDistribution), 1);
       
@@ -954,7 +951,6 @@
         `;
       }).join('');
 
-      // Critical Warnings Rendering
       const alertsBox = document.getElementById("criticalWaterAlertsBox");
       if (criticalAlerts.length === 0) {
         alertsBox.innerHTML = `
@@ -975,7 +971,6 @@
         `).join('');
       }
 
-      // Live matrix grid HTML builder
       let tableHtml = "";
       for (let i = 1; i < matrix.length; i++) {
         const row = matrix[i];
@@ -1005,7 +1000,7 @@
     }
 
     function triggerDataExport(type) {
-      if (!window.latestExportBlob) return alert("Please sign-in to load datasets before triggering export.");
+      if (!window.latestExportBlob) return showToast("No export datasets synchronized.", false);
       
       const arrData = type === 'matrix' ? window.latestExportBlob.matrix : window.latestExportBlob.raw;
       let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
