@@ -3,35 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BPCL Sambalpur Territory - Water Log Utility</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>BPCL Sambalpur Territory - Water Log Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen">
+<body class="bg-slate-900 text-slate-100 min-h-screen selection:bg-amber-500 selection:text-slate-900">
 
-  <!-- Main Navigation Navbar Header -->
-  <header class="bg-blue-800 text-white shadow-md px-4 py-3 sticky top-0 z-50 flex justify-between items-center">
-    <div class="flex items-center gap-2">
-      <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center font-bold text-blue-900 text-xs">BP</div>
-      <h1 class="font-bold tracking-wide text-sm md:text-lg">Sambalpur Territory Water Log</h1>
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-tr from-amber-500 to-yellow-400 rounded-xl flex items-center justify-center font-extrabold text-slate-950 shadow-lg shadow-amber-500/20">
+          BP
+        </div>
+        <div>
+          <h1 class="font-bold tracking-tight text-sm md:text-base text-white">Bharat Petroleum</h1>
+          <p class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Sambalpur Territory</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="authTriggerBtn" onclick="toggleAuthModal(true)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-slate-600 px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-sm">
+          Office Sign-In
+        </button>
+        <button id="logoutBtn" onclick="handleLogout()" class="hidden bg-rose-600/90 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md shadow-rose-950/20">
+          Sign-Out
+        </button>
+      </div>
     </div>
-    <button id="authTriggerBtn" onclick="toggleAuthModal(true)" class="bg-blue-700 hover:bg-blue-600 border border-blue-400/30 px-3 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition">Office Sign-In</button>
-    <button id="logoutBtn" onclick="handleLogout()" class="hidden bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition">Secure Sign-Out</button>
   </header>
 
-  <main class="max-w-4xl mx-auto px-4 py-8">
-    <!-- Public Submission Form Container Card -->
-    <section id="publicFormCard" class="bg-white rounded-xl shadow-xl border border-slate-200/60 overflow-hidden">
-      <div class="bg-linear-to-r from-blue-700 to-indigo-800 p-4 md:p-6 text-white">
-        <h2 class="text-xl font-bold">Daily Tank Water Logging Protocol</h2>
-        <p class="text-xs text-blue-100 mt-1 opacity-90">Dealers / Operators entry terminal window. Active from 06:00 hrs to 00:00 hrs.</p>
+  <main class="max-w-5xl mx-auto px-4 py-8 md:py-12">
+    <section id="publicFormCard" class="bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden max-w-2xl mx-auto">
+      <div class="bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-950 p-6 md:p-8 border-b border-slate-800">
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-3">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Dealer Log Terminal
+        </div>
+        <h2 class="text-2xl font-extrabold text-white tracking-tight">Tank Water Logging Protocol</h2>
+        <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+          Authorized data capture window. Active every two hours from <span class="text-slate-200 font-semibold">06:00 AM to 12:00 AM midnight</span>.
+        </p>
       </div>
 
-      <form id="waterLogForm" onsubmit="submitFormEntry(event)" class="p-4 md:p-6 space-y-6">
-        <!-- Sales Area & Searchable RO Grid Dropdown Selector block -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form id="waterLogForm" onsubmit="submitFormEntry(event)" class="p-6 md:p-8 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Sales Area</label>
-            <select id="salesAreaSelect" onchange="filterRODropdown()" required class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition">
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Sales Area Context</label>
+            <select id="salesAreaSelect" onchange="filterRODropdown()" required class="w-full bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-xl p-3 text-sm focus:ring-1 focus:ring-indigo-500 outline-none transition text-slate-100">
               <option value="">-- Choose Sales Area --</option>
               <option value="Sambalpur">Sambalpur</option>
               <option value="Baripada">Baripada</option>
@@ -41,103 +65,113 @@
           </div>
 
           <div class="relative">
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Retail Outlet / RO Code</label>
-            <input type="text" id="roSearchInput" placeholder="Type to search RO or Code..." onfocus="showRODropdown()" oninput="filterROSearch()" required class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition" />
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Retail Outlet / RO Code</label>
+            <input type="text" id="roSearchInput" placeholder="Type name or code to search..." onfocus="showRODropdown()" oninput="filterROSearch()" required class="w-full bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-xl p-3 text-sm focus:ring-1 focus:ring-indigo-500 outline-none transition text-slate-100" />
             <input type="hidden" id="selectedRODataCode" required />
             <input type="hidden" id="selectedRODataName" required />
             
-            <!-- Custom Searchable Dropdown List Engine -->
-            <div id="roDropdownOptionsContainer" class="hidden absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-2xl z-40 divide-y divide-slate-100"></div>
+            <div id="roDropdownOptionsContainer" class="hidden absolute left-0 right-0 mt-2 max-h-60 overflow-y-auto bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-40 divide-y divide-slate-800/80 custom-scrollbar"></div>
           </div>
         </div>
 
-        <hr class="border-slate-200/80" />
+        <hr class="border-slate-800/80" />
 
-        <!-- Double Binary Check Logic Fields Grid Component -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60">
-            <span class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Water Present - Physical Check</span>
-            <div class="flex gap-4">
-              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-300 rounded-lg cursor-pointer hover:bg-red-50 transition font-medium text-sm text-slate-700 has-[:checked]:border-red-600 has-[:checked]:bg-red-50 has-[:checked]:text-red-700">
-                <input type="radio" name="physicalCheck" value="YES" required class="accent-red-600 scale-110"> YES
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="bg-slate-900/50 p-5 rounded-2xl border border-slate-800/60">
+            <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">Water Present - Physical Check</span>
+            <div class="flex gap-3">
+              <label class="flex-1 flex items-center justify-center gap-2 p-3.5 bg-slate-900 border border-slate-800 rounded-xl cursor-pointer hover:bg-slate-800/60 transition-all font-semibold text-sm text-slate-300 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-950/20 has-[:checked]:text-rose-400">
+                <input type="radio" name="physicalCheck" value="YES" required class="accent-rose-500 scale-110"> YES
               </label>
-              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-300 rounded-lg cursor-pointer hover:bg-green-50 transition font-medium text-sm text-slate-700 has-[:checked]:border-green-600 has-[:checked]:bg-green-50 has-[:checked]:text-green-700">
-                <input type="radio" name="physicalCheck" value="NO" class="accent-green-600 scale-110"> NO
+              <label class="flex-1 flex items-center justify-center gap-2 p-3.5 bg-slate-900 border border-slate-800 rounded-xl cursor-pointer hover:bg-slate-800/60 transition-all font-semibold text-sm text-slate-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-950/20 has-[:checked]:text-emerald-400">
+                <input type="radio" name="physicalCheck" value="NO" class="accent-emerald-500 scale-110"> NO
               </label>
             </div>
           </div>
 
-          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60">
-            <span class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Water Present - Automation / ATG Check</span>
-            <div class="flex gap-4">
-              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-300 rounded-lg cursor-pointer hover:bg-red-50 transition font-medium text-sm text-slate-700 has-[:checked]:border-red-600 has-[:checked]:bg-red-50 has-[:checked]:text-red-700">
-                <input type="radio" name="atgCheck" value="YES" required class="accent-red-600 scale-110"> YES
+          <div class="bg-slate-900/50 p-5 rounded-2xl border border-slate-800/60">
+            <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">Water Present - Automation/ATG Check</span>
+            <div class="flex gap-3">
+              <label class="flex-1 flex items-center justify-center gap-2 p-3.5 bg-slate-900 border border-slate-800 rounded-xl cursor-pointer hover:bg-slate-800/60 transition-all font-semibold text-sm text-slate-300 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-950/20 has-[:checked]:text-rose-400">
+                <input type="radio" name="atgCheck" value="YES" required class="accent-rose-500 scale-110"> YES
               </label>
-              <label class="flex-1 flex items-center justify-center gap-2 p-3 bg-white border border-slate-300 rounded-lg cursor-pointer hover:bg-green-50 transition font-medium text-sm text-slate-700 has-[:checked]:border-green-600 has-[:checked]:bg-green-50 has-[:checked]:text-green-700">
-                <input type="radio" name="atgCheck" value="NO" class="accent-green-600 scale-110"> NO
+              <label class="flex-1 flex items-center justify-center gap-2 p-3.5 bg-slate-900 border border-slate-800 rounded-xl cursor-pointer hover:bg-slate-800/60 transition-all font-semibold text-sm text-slate-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-950/20 has-[:checked]:text-emerald-400">
+                <input type="radio" name="atgCheck" value="NO" class="accent-emerald-500 scale-110"> NO
               </label>
             </div>
           </div>
         </div>
 
-        <!-- Quantitative Metric Inputs Field Block -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Quantitative Metric Fields layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">MS Water Dip Reading (mm)</label>
-            <input type="number" id="msDipInput" step="1" min="0" required placeholder="Enter dip value in mm" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition" />
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">MS Water Dip Reading (mm)</label>
+            <input type="number" id="msDipInput" step="1" min="0" required placeholder="Enter dip value" class="w-full bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-xl p-3 text-sm focus:ring-1 focus:ring-indigo-500 outline-none transition text-slate-100" />
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Density Reading (Kg/m³)</label>
-            <input type="number" id="densityInput" step="0.1" min="0" required placeholder="e.g. 745.5" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition" />
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Density Reading (Kg/m³)</label>
+            <input type="number" id="densityInput" step="0.1" min="0" required placeholder="e.g. 745.5" class="w-full bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-xl p-3 text-sm focus:ring-1 focus:ring-indigo-500 outline-none transition text-slate-100" />
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Remarks <span class="text-slate-400 font-normal">(Optional)</span></label>
-          <textarea id="remarksInput" rows="2" placeholder="Provide details regarding variance or resolution steps if any..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition"></textarea>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Remarks <span class="text-slate-500 font-normal">(Optional)</span></label>
+          <textarea id="remarksInput" rows="2" placeholder="Describe variances, diagnostics, or remediation paths..." class="w-full bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-xl p-3 text-sm focus:ring-1 focus:ring-indigo-500 outline-none transition text-slate-100"></textarea>
         </div>
 
-        <button type="submit" class="w-full bg-linear-to-r from-blue-700 to-indigo-700 hover:from-blue-800 hover:to-indigo-800 text-white font-bold py-3 px-4 rounded-xl transition shadow-md hover:shadow-lg text-sm uppercase tracking-wider cursor-pointer">Transmit Daily Entry</button>
+        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold py-3.5 px-4 rounded-xl transition duration-150 shadow-lg hover:shadow-indigo-500/20 text-xs uppercase tracking-widest cursor-pointer mt-4">
+          Transmit Daily Entry
+        </button>
       </form>
     </section>
 
-    <!-- Secure Office Dashboard View Container -->
-    <section id="officeDashboardCard" class="hidden bg-white rounded-xl shadow-xl border border-slate-200/60 p-4 md:p-6 space-y-6">
-      <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-slate-100 pb-4 gap-2">
+    <section id="officeDashboardCard" class="hidden bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl p-6 md:p-8 space-y-6">
+      <div class="flex flex-col md:flex-row justify-between md:items-center border-b border-slate-800 pb-6 gap-4">
         <div>
-          <h2 class="text-xl font-bold text-slate-900">Territory Operational Dashboard</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Authorized Scope: <span id="scopeBadgeDisplay" class="font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded"></span></p>
+          <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-3">
+            Secure Administrator View
+          </div>
+          <h2 class="text-2xl font-extrabold text-white tracking-tight">Territory Status Dashboard</h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Access Scope: <span id="scopeBadgeDisplay" class="font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20"></span>
+          </p>
         </div>
-        <div class="flex gap-2">
-          <button onclick="triggerDataExport('matrix')" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition uppercase tracking-wider shadow-xs cursor-pointer">Download Matrix Sheet</button>
-          <button onclick="triggerDataExport('raw')" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition uppercase tracking-wider shadow-xs cursor-pointer">Download Raw Logs</button>
+        <div class="flex flex-wrap gap-2.5">
+          <button onclick="triggerDataExport('matrix')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-3 rounded-xl transition-all duration-150 uppercase tracking-widest shadow-md shadow-emerald-950/30 cursor-pointer">
+            Export Matrix
+          </button>
+          <button onclick="triggerDataExport('raw')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-4 py-3 rounded-xl transition-all duration-150 text-xs font-bold uppercase tracking-widest cursor-pointer">
+            Export Raw Logs
+          </button>
         </div>
       </div>
 
-      <!-- Realtime Matrix Tracking Grid Display UI element -->
       <div>
-        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Live Territory Monitoring View (Current Query Window)</h3>
-        <div class="overflow-x-auto border border-slate-200 rounded-lg max-h-96">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          Two-Hour Matrix Compliance Grid (Filtered View)
+        </h3>
+        <div class="overflow-x-auto border border-slate-800 rounded-xl shadow-inner bg-slate-900/40">
           <table class="w-full text-left border-collapse text-xs">
-            <thead class="bg-slate-100 text-slate-700 uppercase font-semibold tracking-wider sticky top-0 border-b border-slate-200">
+            <thead class="bg-slate-950/60 text-slate-400 uppercase font-semibold tracking-wider sticky top-0 border-b border-slate-800">
               <tr>
-                <th class="p-3 whitespace-nowrap bg-slate-100">Date</th>
-                <th class="p-3 whitespace-nowrap bg-slate-100 min-w-[200px]">Retail Outlet (Code)</th>
-                <th class="p-3 text-center">6am</th>
-                <th class="p-3 text-center">8am</th>
-                <th class="p-3 text-center">10am</th>
-                <th class="p-3 text-center">12pm</th>
-                <th class="p-3 text-center">2pm</th>
-                <th class="p-3 text-center">4pm</th>
-                <th class="p-3 text-center">6pm</th>
-                <th class="p-3 text-center">8pm</th>
-                <th class="p-3 text-center">10pm</th>
-                <th class="p-3 text-center">12am</th>
+                <th class="p-4 whitespace-nowrap bg-slate-950/80">Date</th>
+                <th class="p-4 whitespace-nowrap bg-slate-950/80 min-w-[220px]">Retail Outlet (Code)</th>
+                <th class="p-4 text-center">6am</th>
+                <th class="p-4 text-center">8am</th>
+                <th class="p-4 text-center">10am</th>
+                <th class="p-4 text-center">12pm</th>
+                <th class="p-4 text-center">2pm</th>
+                <th class="p-4 text-center">4pm</th>
+                <th class="p-4 text-center">6pm</th>
+                <th class="p-4 text-center">8pm</th>
+                <th class="p-4 text-center">10pm</th>
+                <th class="p-4 text-center">12am</th>
               </tr>
             </thead>
-            <tbody id="dashboardLiveTableBody" class="divide-y divide-slate-200 font-medium text-slate-600">
+            <tbody id="dashboardLiveTableBody" class="divide-y divide-slate-800/60 font-medium text-slate-300">
               <tr>
-                <td colspan="12" class="p-8 text-center text-slate-400 italic">No entries aggregated for display yet. Use export tools to compile full records.</td>
+                <td colspan="12" class="p-12 text-center text-slate-500 italic">No entries synced. Authenticate identity to gather workspace arrays.</td>
               </tr>
             </tbody>
           </table>
@@ -146,28 +180,28 @@
     </section>
   </main>
 
-  <!-- Login Modal Dialog Component Overlay -->
-  <dialog id="authModal" class="rounded-xl border border-slate-200 p-0 shadow-2xl backdrop:bg-slate-900/40 w-full max-w-md overflow-hidden">
-    <div class="bg-slate-900 p-4 text-white flex justify-between items-center">
-      <h3 class="font-bold text-sm tracking-wide uppercase">Territory Office Sign-In</h3>
-      <button onclick="toggleAuthModal(false)" class="text-slate-400 hover:text-white text-lg font-bold">×</button>
+  <dialog id="authModal" class="rounded-2xl border border-slate-800 p-0 shadow-2xl backdrop:bg-slate-950/70 w-full max-w-sm overflow-hidden bg-slate-900 text-slate-100">
+    <div class="bg-slate-950 p-5 border-b border-slate-800 flex justify-between items-center">
+      <h3 class="font-extrabold text-xs tracking-widest uppercase text-slate-300">Territory Office Sign-In</h3>
+      <button onclick="toggleAuthModal(false)" class="text-slate-400 hover:text-white text-xl font-bold cursor-pointer transition">×</button>
     </div>
-    <form onsubmit="executeAuthLogin(event)" class="p-6 space-y-4">
+    <form onsubmit="executeAuthLogin(event)" class="p-6 space-y-5">
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Officer Login ID</label>
-        <input type="text" id="authUsername" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition" />
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Officer Login ID</label>
+        <input type="text" id="authUsername" required class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl p-3 text-sm focus:ring-1 focus:ring-indigo-500 outline-none transition text-slate-100" />
       </div>
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Security Password</label>
-        <input type="password" id="authPassword" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition" />
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Security Password</label>
+        <input type="password" id="authPassword" required class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl p-3 text-sm focus:ring-1 focus:ring-indigo-500 outline-none transition text-slate-100" />
       </div>
-      <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-lg transition text-xs uppercase tracking-wider">Authenticate Identity</button>
+      <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold py-3 rounded-xl transition duration-150 text-xs uppercase tracking-widest cursor-pointer">
+        Authenticate Identity
+      </button>
     </form>
   </dialog>
 
-  <!-- Global Application Logic Script Component -->
   <script>
-    // Your verified Apps Script API link bound directly here
+    // Exact dynamic link to Google Apps Script Web App Deployment ID
     const BACKEND_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbzZsbBpSzM6qZB-ctf9NN0X8d0viwnx6dHBKhLTtqJdh1aleVHcMVXh4j6UeR_dptGR/exec"; 
     
     let localROCache = [];
@@ -178,7 +212,6 @@
       fetchRODatabase();
       evaluateAuthUIState();
       
-      // Dismiss active custom dropdown menu on outer viewport click
       document.addEventListener("click", (e) => {
         if (!e.target.closest("#roSearchInput") && !e.target.closest("#roDropdownOptionsContainer")) {
           document.getElementById("roDropdownOptionsContainer").classList.add("hidden");
@@ -263,7 +296,6 @@
       filterROSearch();
     }
 
-    // Dynamic clean helper to guarantee the Dropdown works accurately on option resets
     function filterRODropdown() {
       document.getElementById("roSearchInput").value = "";
       document.getElementById("selectedRODataCode").value = "";
@@ -281,12 +313,12 @@
       );
       
       if(filtered.length === 0) {
-        container.innerHTML = `<div class="p-3 text-xs text-slate-400 italic">No matches mapped for Area: ${sa}</div>`;
+        container.innerHTML = `<div class="p-4 text-xs text-slate-500 italic">No matches mapped for Area: ${sa}</div>`;
       } else {
         container.innerHTML = filtered.map(item => `
-          <div onclick="selectRO('${item.roCode}', '${item.roName.replace(/'/g, "\\'")}')" class="p-3 text-xs hover:bg-blue-50 cursor-pointer transition flex justify-between items-center text-slate-700">
-            <span class="font-semibold">${item.roName}</span>
-            <span class="bg-slate-100 font-mono text-slate-500 px-1.5 py-0.5 rounded text-[10px]">${item.roCode}</span>
+          <div onclick="selectRO('${item.roCode}', '${item.roName.replace(/'/g, "\\'")}')" class="p-3.5 text-xs hover:bg-indigo-950/40 cursor-pointer transition flex justify-between items-center border-b border-slate-800/40 last:border-0">
+            <span class="font-semibold text-slate-200">${item.roName}</span>
+            <span class="bg-slate-800 font-mono text-slate-400 px-2.5 py-1 rounded text-[10px] border border-slate-700/60">${item.roCode}</span>
           </div>
         `).join('');
       }
@@ -338,30 +370,33 @@
         window.latestExportBlob = res; 
         const body = document.getElementById("dashboardLiveTableBody");
         
-        if(res.matrix.length <= 1) {
-          body.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-slate-400 italic">No historical timeline entries compiled for this visibility scope.</td></tr>`;
+        if(!res.matrix || res.matrix.length <= 1) {
+          body.innerHTML = `<tr><td colspan="12" class="p-12 text-center text-slate-500 italic">No historical timeline entries compiled for this visibility scope.</td></tr>`;
           return;
         }
         
         let html = "";
         for (let i = 1; i < res.matrix.length; i++) {
           const row = res.matrix[i];
-          html += `<tr>`;
-          html += `<td class="p-3 font-mono text-slate-500">${row[0]}</td>`;
-          html += `<td class="p-3 text-slate-900 font-semibold">${row[1]}</td>`;
+          html += `<tr class="hover:bg-slate-900/30 transition-colors">`;
+          html += `<td class="p-4 font-mono text-slate-400 whitespace-nowrap">${row[0]}</td>`;
+          html += `<td class="p-4 text-white font-semibold whitespace-nowrap">${row[1]}</td>`;
           
           for (let c = 2; c < row.length; c++) {
             let cellVal = row[c];
-            let classString = "p-3 text-center ";
-            if (cellVal === "DEVIATION") {
-              classString += "bg-red-50 text-red-600 font-bold border border-red-200/60";
-              cellVal = "WATER";
-            } else if (cellVal === "OK") {
-              classString += "text-green-600 font-semibold";
+            let cellClass = "p-4 text-center ";
+            
+            if (cellVal === "WATER") {
+              cellClass += "text-rose-500 font-extrabold";
+              cellVal = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 font-bold text-[10px]">WATER</span>`;
+            } else if (cellVal === "NIL") {
+              cellClass += "text-emerald-500 font-semibold";
+              cellVal = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-semibold text-[10px]">NIL</span>`;
             } else {
-              classString += "text-slate-300 font-light";
+              cellClass += "text-slate-600 font-light";
+              cellVal = "-";
             }
-            html += `<td class="${classString}">${cellVal}</td>`;
+            html += `<td class="${cellClass}">${cellVal}</td>`;
           }
           html += `</tr>`;
         }
@@ -373,12 +408,12 @@
       if (!window.latestExportBlob) return alert("Compiling dataset arrays, please retry shortly...");
       
       const arrData = type === 'matrix' ? window.latestExportBlob.matrix : window.latestExportBlob.raw;
-      let csvContent = "data:text/csv;charset=utf-8,";
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // Adding UTF-8 BOM so Excel opens it with correct formatting
       
       arrData.forEach(row => {
         const cleanRow = row.map(val => {
           let str = String(val).replace(/"/g, '""');
-          return str.includes(',') ? `"${str}"` : str;
+          return str.includes(',') || str.includes('\n') ? `"${str}"` : str;
         });
         csvContent += cleanRow.join(",") + "\r\n";
       });
