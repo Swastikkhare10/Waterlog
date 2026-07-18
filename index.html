@@ -1,4 +1,3 @@
-<!-- STREAMING_CHUNK: Initializing document headers, importing Tailwind UI, and styling global theme overrides -->
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-50">
 <head>
@@ -31,7 +30,6 @@
 </head>
 <body class="min-h-screen flex flex-col text-slate-800 bg-slate-50/50">
 
-  <!-- STREAMING_CHUNK: Rendering corporate top navigation bar with BPCL colors and status indicators -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
@@ -65,7 +63,6 @@
 
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
     
-    <!-- STREAMING_CHUNK: Displaying public user workspace card with Dual Action Tabs (Entry & Tank Registration) -->
     <section id="publicFormCard" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden max-w-3xl mx-auto">
       
       <!-- Premium Segment Header -->
@@ -229,7 +226,6 @@
       </form>
     </section>
 
-    <!-- STREAMING_CHUNK: Setting up the comprehensive secured Territory Analytics & Matrix Dashboard -->
     <section id="officeDashboardCard" class="hidden space-y-6">
       
       <!-- Top Overview Dashboard Stats Cards Row -->
@@ -280,7 +276,6 @@
         </div>
       </div>
 
-      <!-- STREAMING_CHUNK: Rendering live visual graph elements for hourly compliance metrics -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <!-- Hourly activity graph card -->
@@ -309,7 +304,6 @@
         </div>
       </div>
 
-      <!-- STREAMING_CHUNK: Formatting main data-tables and export tool controls -->
       <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
         <div class="p-6 border-b border-slate-150 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
           <div>
@@ -355,7 +349,6 @@
     </section>
   </main>
 
-  <!-- STREAMING_CHUNK: Initializing login modal popup wrapper overlay -->
   <dialog id="authModal" class="rounded-2xl border border-slate-200 p-0 shadow-2xl backdrop:bg-slate-900/40 w-full max-w-sm overflow-hidden bg-white text-slate-800">
     <div class="bg-slate-900 p-5 text-white flex justify-between items-center">
       <h3 class="font-extrabold text-xs tracking-widest uppercase text-slate-200">Officer Terminal Login</h3>
@@ -376,7 +369,6 @@
     </form>
   </dialog>
 
-  <!-- STREAMING_CHUNK: Setting up JavaScript core logic, local database handlers, and matrix render engines -->
   <script>
     const BACKEND_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbzZsbBpSzM6qZB-ctf9NN0X8d0viwnx6dHBKhLTtqJdh1aleVHcMVXh4j6UeR_dptGR/exec";
 
@@ -436,6 +428,8 @@
         if (res.success && res.data) {
           localTanksList = res.data;
           localStorage.setItem("local_tanks_db", JSON.stringify(localTanksList));
+          // Refresh the selector list immediately in case an RO is currently selected
+          renderROSelectorTanks();
         }
       } catch(e) {
         console.warn("Using stored tank database cache.");
@@ -600,7 +594,8 @@
         return;
       }
 
-      const activeTanks = localTanksList.filter(t => t.roCode === code);
+      // Convert both to strings to avoid type comparison mismatches (Number vs String)
+      const activeTanks = localTanksList.filter(t => String(t.roCode).trim() === String(code).trim());
       
       if (activeTanks.length === 0) {
         containerGrid.classList.add("hidden");
@@ -1034,4 +1029,3 @@
   </script>
 </body>
 </html>
-```eof
