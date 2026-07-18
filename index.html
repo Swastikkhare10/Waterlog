@@ -176,7 +176,7 @@
         </button>
       </form>
 
-      <!-- TAB 2: REGISTER TANK FORM -->
+      <!-- TAB 2: REGISTER TANK FORM (XP95 REMOVED) -->
       <form id="tankRegisterForm" onsubmit="submitNewTank(event)" class="p-6 space-y-6 hidden">
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3 text-amber-900">
           <div class="text-lg">💡</div>
@@ -219,7 +219,6 @@
               <option value="MS">MS (Motor Spirit)</option>
               <option value="HSD">HSD (High Speed Diesel)</option>
               <option value="Speed">Speed (Premium Petrol)</option>
-              <option value="XP95">XP95</option>
             </select>
           </div>
         </div>
@@ -318,7 +317,7 @@
             <p class="text-xs text-slate-400 mt-0.5">Aggregated visual grid representing active water sweeps per 2-hour window.</p>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button onclick="triggerDataExport('matrix')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition duration-150 uppercase tracking-wider cursor-pointer shadow-xs">
+            <button onclick="triggerDataExport('matrix')" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition duration-150 uppercase tracking-wider cursor-pointer shadow-xs">
               💾 Export Matrix
             </button>
             <button onclick="triggerDataExport('raw')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 text-xs font-bold px-4 py-2.5 rounded-xl transition duration-150 border border-slate-700 uppercase tracking-wider cursor-pointer">
@@ -379,7 +378,6 @@
 
   <!-- STREAMING_CHUNK: Setting up JavaScript core logic, local database handlers, and matrix render engines -->
   <script>
-    // Paste your deployed Google Apps Script URL here:
     const BACKEND_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbzZsbBpSzM6qZB-ctf9NN0X8d0viwnx6dHBKhLTtqJdh1aleVHcMVXh4j6UeR_dptGR/exec";
 
     // Standard static retail outlets database matching BPCL territories
@@ -708,7 +706,7 @@
           alert("Unable to register: " + res.error);
         }
       } catch(err) {
-        // Fallback for sandboxed testing
+        // Fallback for sandboxed testing / raw state
         localTanksList.push({
           salesArea: payload.salesArea,
           roCode: payload.roCode,
@@ -716,14 +714,14 @@
           product: payload.product
         });
         localStorage.setItem("local_tanks_db", JSON.stringify(localTanksList));
-        alert("Tank Registered Locally successfully.");
+        alert("Tank Configured locally. To deploy it live, ensure your Apps Script is updated and newly deployed!");
         document.getElementById("tankRegisterForm").reset();
         filterTankRODropdown();
         switchFormTab('entry');
       }
     }
 
-    // MAIN TELETEMETRY SUBMISSION ENGINE
+    // MAIN SUBMISSION DISPATCH
     async function submitFormEntry(e) {
       e.preventDefault();
       
@@ -756,14 +754,14 @@
         });
         const res = await r.json();
         if (res.success) {
-          alert("Telemetry Data Successfully Saved.");
+          alert("Telemetry Data Successfully Transmitted.");
           document.getElementById("waterLogForm").reset();
           filterRODropdown();
         } else {
           alert("Submission Rejected: " + res.error);
         }
       } catch(err) {
-        // Fallback simulated local sandbox log database
+        // Fallback simulated local sandbox logging database
         const mockLogs = JSON.parse(localStorage.getItem("local_logs_db")) || [];
         const simulatedIST = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
         
@@ -799,7 +797,7 @@
         mockLogs.push(simulatedRow);
         localStorage.setItem("local_logs_db", JSON.stringify(mockLogs));
         
-        alert("Entry successfully recorded in local simulation database!");
+        alert("Entry logged successfully in local simulation layer!");
         document.getElementById("waterLogForm").reset();
         filterRODropdown();
       }
@@ -818,7 +816,7 @@
           matrix = res.matrix;
         }
       } catch(e) {
-        // Build simulation arrays from offline sandbox datasets
+        // Build simulated mock matrix data for quick previews
         const mockLogs = JSON.parse(localStorage.getItem("local_logs_db")) || [
           [
             "2026-07-18T07:22:15.000Z",
@@ -837,7 +835,6 @@
           ]
         ];
 
-        // Headers matching active schemas
         const headers = ["Timestamp", "Date", "Time Window", "Sales Area", "RO Name", "RO Code", "Tank Name", "Product", "Physical Check", "ATG Check", "MS Water Dip (mm)", "Density (Kg/m3)", "Remarks"];
         const filtered = [headers];
         const matrixData = {};
@@ -898,14 +895,12 @@
         return;
       }
 
-      // 1. COMPILATION OF CRITICAL HIGHLIGHT METRICS
-      const entriesLogged = rawRows.length - 1; // Subtract headers row
+      const entriesLogged = rawRows.length - 1;
       let waterOccurrences = 0;
       const criticalAlerts = [];
       const hourlyDistribution = { "6am": 0, "8am": 0, "10am": 0, "12pm": 0, "2pm": 0, "4pm": 0, "6pm": 0, "8pm": 0, "10pm": 0, "12am": 0 };
       const hourlyWater = { "6am": 0, "8am": 0, "10am": 0, "12pm": 0, "2pm": 0, "4pm": 0, "6pm": 0, "8pm": 0, "10pm": 0, "12am": 0 };
 
-      // Process Raw Log Lines
       for (let i = 1; i < rawRows.length; i++) {
         const row = rawRows[i];
         const isPhysicalYes = row[8] === "YES" || row[8] === "Yes";
@@ -924,26 +919,24 @@
           criticalAlerts.push({
             date: row[1],
             roName: row[4],
-            tank: row[6] || "Main",
-            method: isPhysicalYes && isAtgYes ? "Physical & ATG" : (isPhysicalYes ? "Physical" : "ATG Verification")
+            tank: row[6] || "Main Tank",
+            method: isPhysicalYes && isAtgYes ? "Physical & ATG" : (isPhysicalYes ? "Physical Check" : "ATG Verification")
           });
         }
       }
 
-      // Calculate relative compliance percentage
       const targetSalesAreaROs = localROCache.filter(item => stateActiveUserArea === "TM" || item.salesArea === stateActiveUserArea);
       const reportedROsCount = new Set(rawRows.slice(1).map(row => row[5])).size;
       const compliancePercent = targetSalesAreaROs.length > 0 
         ? Math.min(100, Math.round((reportedROsCount / targetSalesAreaROs.length) * 100)) 
         : 100;
 
-      // Update UI Text Panels
       document.getElementById("statTotalEntries").innerText = entriesLogged;
       document.getElementById("statWaterEntries").innerText = waterOccurrences;
       document.getElementById("statCompliance").innerText = `${compliancePercent}%`;
       document.getElementById("statTotalTanks").innerText = localTanksList.filter(t => stateActiveUserArea === "TM" || t.salesArea === stateActiveUserArea).length;
 
-      // 2. RENDER HOURLY PROGRESS BARS (LIGHT DESIGN)
+      // Render Distribution Bars
       const hourlyVisualBox = document.getElementById("hourlyVisualBars");
       const maxEntriesInBlock = Math.max(...Object.values(hourlyDistribution), 1);
       
@@ -951,14 +944,13 @@
         const total = hourlyDistribution[block];
         const water = hourlyWater[block];
         const totalPct = Math.round((total / maxEntriesInBlock) * 100);
-        const waterPct = total > 0 ? Math.round((water / total) * 100) : 0;
         
         return `
           <div class="flex items-center gap-4 text-xs">
             <span class="w-12 font-bold text-slate-500 uppercase">${block}</span>
             <div class="flex-1 bg-slate-100 rounded-full h-4 overflow-hidden relative border border-slate-200">
               <div class="bg-blue-500 h-full rounded-full transition-all duration-500" style="width: ${totalPct}%"></div>
-              ${water > 0 ? `<div class="absolute top-0 left-0 bg-rose-500 h-full opacity-80" style="width: ${Math.min(totalPct, (water/maxEntriesInBlock)*100)}%"></div>` : ''}
+              ${water > 0 ? `<div class="absolute top-0 left-0 bg-rose-500 h-full opacity-85" style="width: ${Math.min(totalPct, (water/maxEntriesInBlock)*100)}%"></div>` : ''}
             </div>
             <span class="w-24 text-right font-medium text-slate-500">
               <span class="text-slate-800 font-bold">${total}</span> logged ${water > 0 ? `(<span class="text-rose-600 font-bold">${water} W</span>)` : ''}
@@ -967,12 +959,12 @@
         `;
       }).join('');
 
-      // 3. RENDER CRITICAL WARNINGS
+      // Critical Warnings Rendering
       const alertsBox = document.getElementById("criticalWaterAlertsBox");
       if (criticalAlerts.length === 0) {
         alertsBox.innerHTML = `
           <div class="p-6 text-center text-slate-400 bg-slate-50 border border-slate-200 rounded-xl text-xs italic">
-            ✅ No water instances reported currently across active grid cycles.
+            ✅ No water instances reported currently.
           </div>
         `;
       } else {
@@ -988,7 +980,7 @@
         `).join('');
       }
 
-      // 4. GENERATING INTERACTIVE DATA TABLE (LIGHT DESIGN WITH EXACT LABELS)
+      // Live matrix grid HTML builder
       let tableHtml = "";
       for (let i = 1; i < matrix.length; i++) {
         const row = matrix[i];
@@ -1002,10 +994,10 @@
           
           if (cellVal === "water detected") {
             cellClass += "text-rose-600 bg-rose-50 border-r border-l border-rose-100/60";
-            cellVal = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-rose-100/60 text-rose-700 text-[9px] font-black uppercase tracking-wider">WATER DETECTED</span>`;
+            cellVal = `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-rose-100/60 text-rose-750 text-[10px] font-black uppercase tracking-wider">WATER DETECTED</span>`;
           } else if (cellVal === "not detected") {
             cellClass += "text-emerald-600 bg-emerald-50/50";
-            cellVal = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-100/50 text-emerald-700 text-[9px] font-bold uppercase tracking-wider">not detected</span>`;
+            cellVal = `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-emerald-100/50 text-emerald-750 text-[10px] font-extrabold uppercase tracking-wider">not detected</span>`;
           } else {
             cellClass += "text-slate-300 font-light";
             cellVal = "-";
@@ -1017,12 +1009,11 @@
       body.innerHTML = tableHtml;
     }
 
-    // EXCEL EXPORTER UTILITY
     function triggerDataExport(type) {
-      if (!window.latestExportBlob) return alert("Please sign-in to load datasets before trigger export.");
+      if (!window.latestExportBlob) return alert("Please sign-in to load datasets before triggering export.");
       
       const arrData = type === 'matrix' ? window.latestExportBlob.matrix : window.latestExportBlob.raw;
-      let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // Prepend UTF-8 BOM so Excel opens with proper Indian Territory naming conventions
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
       
       arrData.forEach(row => {
         const cleanRow = row.map(val => {
